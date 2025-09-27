@@ -2,6 +2,7 @@
 
 {
   # 🔹 Set username & home explicitly (flakes don't use env vars)
+  home.stateVersion = "25.11";
   home.username = "harsh";
   home.homeDirectory = "/home/harsh";
 
@@ -14,7 +15,7 @@
     ffmpeg
     python3
     stow
-    nodejs-lts
+    nodejs_latest_lts
     yarn
     pnpm
     gotests
