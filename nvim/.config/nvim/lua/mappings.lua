@@ -11,5 +11,10 @@ map("i", "jk", "<ESC>")
 
 -- <leader>ff to format file
 map("n", "<leader>ff", function()
-	vim.lsp.buf.format { async = true }
+  vim.lsp.buf.format { async = true }
 end, { desc = "Format file" })
+
+-- <leader>ee to toggle file tree (NvTreeToggle)
+map("n", "<leader>ee", function()
+  require("nvchad.tree").toggle()
+end, { desc = "Toggle file tree" })
