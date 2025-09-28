@@ -1,20 +1,25 @@
-require "nvchad.mappings"
-
--- add yours here
-
 local map = vim.keymap.set
 
-map("n", ";", ":", { desc = "CMD enter command mode" })
-map("i", "jk", "<ESC>")
+-- Basic keymaps
+map("n", ";", ":", { desc = "Enter command mode" })
+map("i", "jk", "<ESC>", { desc = "Exit insert mode" })
 
--- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
+-- Save file (works in normal, insert, visual modes)
+map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>", { desc = "Save file" })
 
--- <leader>ff to format file
+-- Format current buffer using LSP
 map("n", "<leader>ff", function()
   vim.lsp.buf.format { async = true }
 end, { desc = "Format file" })
 
--- <leader>ee to toggle file tree (NvTreeToggle)
+-- Toggle file explorer (FIXED: using nvim-tree.api)
 map("n", "<leader>ee", function()
-  require("nvchad.tree").toggle()
+  -- Check if nvim-tree is installed (optional, but good practice)
+  local ok, api = pcall(require, "nvim-tree.api") 
+  
+  if ok then
+    api.tree.toggle()
+  else
+    vim.notify("nvim-tree not available (check plugin status)", vim.log.levels.WARN)
+  end
 end, { desc = "Toggle file tree" })

@@ -1,51 +1,43 @@
-return {
-  {
+return { -- Formatter/Code actions
+{
     "stevearc/conform.nvim",
-    event = 'BufWritePre', -- Only loads when saving files
-    opts = require "configs.conform",
-  },
-
-  {
+    lazy = true,
+    event = "BufWritePre",
+    opts = require("configs.conform")
+}, -- LSPConfig core
+{
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" }, -- Lazy-load on file operations
+    lazy = true,
+    event = {"BufReadPre", "BufNewFile"},
+    dependencies = {"williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim"},
     config = function()
-      require "configs.lspconfig"
-    end,
-    dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-    },
-  },
-
-  {
+        require("configs.lspconfig")
+    end
+}, -- Mason package manager
+{
     "williamboman/mason.nvim",
-    cmd = { "Mason", "MasonInstall", "MasonUpdate" }, -- Only loads when Mason commands are used
+    cmd = {"Mason", "MasonInstall", "MasonUpdate"},
     opts = {
-      ensure_installed = {
-        -- LSP Servers (installed but not loaded until needed)
-        "tsserver", "eslint-lsp", "json-lsp", "yaml-language-server", 
-        "dockerfile-language-server", "graphql-language-service-cli", "prisma-language-server",
-        "gopls", "golangci-lint-langserver", "staticcheck",
-        "pyright", "ruff-lsp",
-        "html-lsp", "css-lsp", "emmet-ls", "tailwindcss-language-server",
-        
-        -- Formatters
-        "prettier", "prettierd", "stylua", "black", "shfmt", "markdownlint",
-      },
-    },
-  },
-
-  {
+        -- optional: default settings
+        ui = {
+            border = "rounded"
+        }
+    }
+}, -- Mason LSPConfig bridge
+{
     "williamboman/mason-lspconfig.nvim",
-    event = { "BufReadPre", "BufNewFile" }, -- Lazy-load with lspconfig
+    lazy = true,
+    event = {"BufReadPre", "BufNewFile"},
     opts = {
-      ensure_installed = {
-        "tsserver", "eslint", "jsonls", "yamlls", "dockerls", "graphql", "prismals",
-        "gopls", "golangci_lint_ls", "staticcheck",
-        "pyright", "ruff_lsp",
-        "html", "cssls", "emmet_ls", "tailwindcss"
-      },
-      automatic_installation = true,
-    },
-  },
-}
+        ensure_installed = {"typescript-language-server", "eslint-lsp", "jsonls", "yamlls", "dockerls",
+                            "graphql-language-service-cli", "prisma-language-server", "gopls", "go-staticcheck",
+                            "golangci-lint", "pyright", "ruff-lsp", "html", "cssls", "emmet-ls",
+                            "tailwindcss-language-server", "markdownlint", "prettier", "stylua", "black", "shfmt"},
+        automatic_installation = true
+    }
+}, -- Autopairs
+{
+    "windwp/nvim-autopairs",
+    event = "InsertEnter", -- Load only when entering Insert mode
+    config = true -- Runs require("nvim-autopairs").setup{}
+}}

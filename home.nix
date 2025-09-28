@@ -15,11 +15,12 @@
     nodejs_24
     yarn
     pnpm
+    go
     gotests
     gopls
+    go-tools
     impl
     delve
-    go-tools
     git
   ];
 

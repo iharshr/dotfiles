@@ -1,35 +1,49 @@
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
 
--- bootstrap lazy and all plugins
-local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
-
-if not vim.uv.fs_stat(lazypath) then
-    local repo = "https://github.com/folke/lazy.nvim.git"
-    vim.fn.system {"git", "clone", "--filter=blob:none", repo, "--branch=stable", lazypath}
+-- bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({"git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
+                   lazypath})
 end
-
 vim.opt.rtp:prepend(lazypath)
 
-local lazy_config = require "configs.lazy"
-
--- load plugins
-require("lazy").setup({{
+-- Lazy.nvim setup
+require("lazy").setup({ -- NvChad core
+{
     "NvChad/NvChad",
     lazy = false,
     branch = "v2.5",
     import = "nvchad.plugins"
-}, {
+}, -- custom plugins
+{
     import = "plugins"
-}}, lazy_config)
+}}, {
+    -- lazy.nvim config options
+    install = {
+        colorscheme = {"catppuccin", "tokyonight"}
+    },
+    checker = {
+        enabled = true
+    }, -- automatically check for plugin updates
+    defaults = {
+        lazy = true,
+        version = "*"
+    }
+})
 
--- load theme
-dofile(vim.g.base46_cache .. "defaults")
-dofile(vim.g.base46_cache .. "statusline")
-
-require "options"
-require "autocmds"
-
+-- options, autocmds, mappings
+require("options")
+require("autocmds")
 vim.schedule(function()
-    require "mappings"
+    require("mappings")
+end)
+
+-- Execute the formatter installation logic AFTER plugins are loaded and everything is stable
+vim.schedule(function()
+    local installer = require("configs.installer")
+    if installer and installer.install_formatters then
+        installer.install_formatters()
+    end
 end)
