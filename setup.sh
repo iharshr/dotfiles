@@ -29,7 +29,7 @@ fi
 # Requires your flake.nix to define `homeConfigurations.${USER_NAME}`
 if [ -f "$PWD/flake.nix" ]; then
   echo "🔧 Applying Home Manager config for $USER_NAME..."
-  home-manager switch --flake "$PWD#$USER_NAME"
+  home-manager switch --flake .#$(whoami);
 else
   echo "⚠️ No flake.nix found, falling back to plain home.nix"
   home-manager switch -f "$PWD/home.nix"
@@ -41,11 +41,26 @@ if ! command -v stow &>/dev/null; then
   sudo apt-get update && sudo apt-get install -y stow
 fi
 
+# Ensure Oh-My-Zsh is installed
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  echo "⬇️ Installing Oh-My-Zsh..."
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
+
+# Set custom plugin directory
+ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
+
+# Clone required plugins if missing
+[ -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ] || git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+[ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+[ -d "$ZSH_CUSTOM/plugins/zsh-autocomplete" ] || git clone https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
+
+
+
 # 6. Symlink dotfiles
 for dir in zsh nvim; do
-  if [ -d "$dir" ]; then
-    stow -v -d "$PWD" -t "$HOME" "$dir"
-  fi
+  [ -d "$dir" ] && stow --adopt -v -d "$PWD" -t "$HOME" "$dir"
 done
+
 
 echo "✅ Setup complete!"

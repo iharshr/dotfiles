@@ -111,6 +111,7 @@ Apply:
 
 ```sh
 home-manager switch --flake .#harsh
+home-manager switch --flake .#$(whoami);
 ```
 
 ### ❌ Disable a package
