@@ -4,6 +4,7 @@
 local lspconfig = require("lspconfig")
 local mason_lspconfig = require("mason-lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
+require("configs.cookbook")
 
 -- Define a reusable function for common LSP setup (keymaps, formatting, etc.)
 local on_attach = function(client, bufnr)
@@ -75,5 +76,3 @@ mason_lspconfig.setup({
     end,
   }
 })
-
-vim.lsp.enable('cookbook')
