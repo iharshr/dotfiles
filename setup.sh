@@ -59,7 +59,9 @@ ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 
 # 6. Symlink dotfiles
 for dir in zsh nvim; do
-  [ -d "$dir" ] && stow --adopt -v -d "$PWD" -t "$HOME" "$dir"
+    # Remove conflicting files before stowing
+    stow -D -v -d "$PWD" -t "$HOME" "$dir" 2>/dev/null || true
+    stow -v -d "$PWD" -t "$HOME" "$dir"
 done
 
 
