@@ -64,5 +64,11 @@ for dir in zsh nvim; do
     stow -v -d "$PWD" -t "$HOME" "$dir"
 done
 
+# 7. Set Zsh as default shell
+if [ "$SHELL" != "$(command -v zsh)" ]; then
+  echo "⬇️ Setting Zsh as default shell..."
+  chsh -s "$(command -v zsh)" "$USER" || echo "⚠️ Please run 'chsh -s $(which zsh)' manually and re-login"
+fi
+
 
 echo "✅ Setup complete!"
