@@ -32,7 +32,8 @@ return { -- Formatter/Code actions
         ensure_installed = {"typescript-language-server", "eslint-lsp", "jsonls", "yamlls", "dockerls",
                             "graphql-language-service-cli", "prisma-language-server", "gopls", "go-staticcheck",
                             "golangci-lint", "pyright", "ruff-lsp", "html", "cssls", "emmet-ls",
-                            "tailwindcss-language-server", "markdownlint", "prettier", "stylua", "black", "shfmt"},
+                            "tailwindcss-language-server", "markdownlint", "prettier", "stylua", "black", "shfmt",
+                            "biome"},
         automatic_installation = true
     }
 }, -- Autopairs

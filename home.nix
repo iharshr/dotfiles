@@ -22,6 +22,8 @@
     impl
     delve
     git
+    eslint_d
+    biome
   ];
 
   # Neovim managed by Home Manager
