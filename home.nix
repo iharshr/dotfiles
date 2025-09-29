@@ -24,6 +24,7 @@
     git
     eslint_d
     biome
+    pnpm
   ];
 
   # Neovim managed by Home Manager
