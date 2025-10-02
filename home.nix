@@ -24,6 +24,7 @@
     git
     eslint_d
     biome
+    unzip
   ];
 
   # Neovim managed by Home Manager
