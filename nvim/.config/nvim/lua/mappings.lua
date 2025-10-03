@@ -71,7 +71,12 @@ end, { desc = "Toggle file explorer" })
 -------------------------------------------------------
 -- Telescope (Fuzzy Finder)
 -------------------------------------------------------
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
+map(
+  "n",
+  "<leader>ff",
+  "<cmd>lua require('telescope.builtin').find_files({ hidden = true, no_ignore = true, file_ignore_patterns = {'.git/', 'node_modules/', 'build/', 'dist/'} })<cr>",
+  { desc = "Find files including hidden but exclude common ignored folders" }
+)
 map("n", "<leader>fg",
   function() require("telescope.builtin").live_grep({ additional_args = function() return { "--ignore-case" } end }) end,
   { desc = "Live grep (global search, case-insensitive)" })
