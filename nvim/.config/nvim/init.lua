@@ -4,46 +4,51 @@ vim.g.mapleader = " "
 -- bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({"git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
-                   lazypath})
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
+    lazypath })
 end
 vim.opt.rtp:prepend(lazypath)
 
 -- Lazy.nvim setup
 require("lazy").setup({ -- NvChad core
-{
+  {
     "NvChad/NvChad",
     lazy = false,
     branch = "v2.5",
     import = "nvchad.plugins"
-}, -- custom plugins
-{
+  }, -- custom plugins
+  {
     import = "plugins"
-}}, {
-    -- lazy.nvim config options
-    install = {
-        colorscheme = {"catppuccin", "tokyonight"}
-    },
-    checker = {
-        enabled = true
-    }, -- automatically check for plugin updates
-    defaults = {
-        lazy = true,
-        version = "*"
-    }
+  } }, {
+  -- lazy.nvim config options
+  install = {
+    colorscheme = { "catppuccin", "tokyonight" }
+  },
+  checker = {
+    enabled = true
+  },   -- automatically check for plugin updates
+  defaults = {
+    lazy = true,
+    version = "*"
+  }
 })
+-- LSP
+require("configs.lua-lsp")
+
+-- FileType Fix
+require("configs.filetypes")
 
 -- options, autocmds, mappings
 require("options")
 require("autocmds")
 vim.schedule(function()
-    require("mappings")
+  require("mappings")
 end)
 
 -- Execute the formatter installation logic AFTER plugins are loaded and everything is stable
 vim.schedule(function()
-    local installer = require("configs.installer")
-    if installer and installer.install_formatters then
-        installer.install_formatters()
-    end
+  local installer = require("configs.installer")
+  if installer and installer.install_formatters then
+    installer.install_formatters()
+  end
 end)

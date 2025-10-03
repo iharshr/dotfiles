@@ -1,44 +1,59 @@
 return { -- Formatter/Code actions
-{
+  {
     "stevearc/conform.nvim",
     lazy = true,
     event = "BufWritePre",
     opts = require("configs.conform")
-}, -- LSPConfig core
-{
+  }, -- LSPConfig core
+  {
     "neovim/nvim-lspconfig",
     lazy = true,
-    event = {"BufReadPre", "BufNewFile"},
-    dependencies = {"williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim"},
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" },
     config = function()
-        require("configs.lspconfig")
+      require("configs.lspconfig")
     end
-}, -- Mason package manager
-{
+  }, -- Mason package manager
+  {
     "williamboman/mason.nvim",
-    cmd = {"Mason", "MasonInstall", "MasonUpdate"},
+    cmd = { "Mason", "MasonInstall", "MasonUpdate" },
     opts = {
-        -- optional: default settings
-        ui = {
-            border = "rounded"
-        }
+      -- optional: default settings
+      ui = {
+        border = "rounded"
+      }
     }
-}, -- Mason LSPConfig bridge
-{
+  }, -- Mason LSPConfig bridge
+  {
     "williamboman/mason-lspconfig.nvim",
     lazy = true,
-    event = {"BufReadPre", "BufNewFile"},
+    event = { "BufReadPre", "BufNewFile" },
     opts = {
-        ensure_installed = {"typescript-language-server", "eslint-lsp", "jsonls", "yamlls", "dockerls",
-                            "graphql-language-service-cli", "prisma-language-server", "gopls", "go-staticcheck",
-                            "golangci-lint", "pyright", "ruff-lsp", "html", "cssls", "emmet-ls",
-                            "tailwindcss-language-server", "markdownlint", "prettier", "stylua", "black", "shfmt",
-                            "biome"},
-        automatic_installation = true
+      ensure_installed = { "typescript-language-server", "eslint-lsp", "jsonls", "yamlls", "dockerls",
+        "graphql-language-service-cli", "prisma-language-server", "gopls", "go-staticcheck",
+        "golangci-lint", "pyright", "ruff-lsp", "html", "cssls", "emmet-ls",
+        "tailwindcss-language-server", "markdownlint", "prettier", "stylua", "black", "shfmt",
+        "biome" },
+      automatic_installation = true
     }
-}, -- Autopairs
-{
+  }, -- Autopairs
+  {
     "windwp/nvim-autopairs",
     event = "InsertEnter", -- Load only when entering Insert mode
-    config = true -- Runs require("nvim-autopairs").setup{}
-}}
+    config = true          -- Runs require("nvim-autopairs").setup{}
+  },
+  {
+    "akinsho/toggleterm.nvim",
+    version = "*", -- latest stable
+    config = function()
+      require("toggleterm").setup {
+        size = 15,
+        open_mapping = [[<c-\>]],
+        shade_terminals = true,
+        shading_factor = 2,
+        direction = "horizontal",
+        float_opts = { border = "curved" },
+      }
+    end
+  },
+}

@@ -3,13 +3,13 @@ local M = {}
 
 -- Base theme configuration
 M.base46 = {
-    theme = "onedark",
+  theme = "onedark",
 
-    -- Optional highlight overrides
-    -- hl_override = {
-    --     Comment = { italic = true },
-    --     ["@comment"] = { italic = true },
-    -- },
+  -- Optional highlight overrides
+  -- hl_override = {
+  --     Comment = { italic = true },
+  --     ["@comment"] = { italic = true },
+  -- },
 }
 
 -- Dashboard (nvdash) settings
