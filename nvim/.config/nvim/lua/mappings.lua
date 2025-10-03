@@ -72,7 +72,7 @@ end, { desc = "Toggle file explorer" })
 -- Telescope (Fuzzy Finder)
 -------------------------------------------------------
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live grep (global search)" })
+map("n", "<leader>fg", function() require("telescope.builtin").live_grep({ additional_args = function() return { "--ignore-case" } end }) end, { desc = "Live grep (global search, case-insensitive)" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help tags" })
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
