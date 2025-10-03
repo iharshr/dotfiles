@@ -25,6 +25,7 @@
     eslint_d
     biome
     unzip
+    gcc
   ];
 
   # Neovim managed by Home Manager
