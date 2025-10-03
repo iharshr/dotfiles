@@ -43,10 +43,9 @@ end
 -- Default capabilities
 local capabilities = cmp_nvim_lsp.default_capabilities()
 
--- Mason LSP setup
+-- Mason LSP setup - FIXED: Use correct server names
 mason_lspconfig.setup({
-    ensure_installed = {"lua_ls", "typescript-language-server", "eslint-lsp", "jsonls", "yamlls", "html", "cssls",
-                        "pyright", "gopls"},
+    ensure_installed = {"lua_ls", "ts_ls", "eslint", "jsonls", "yamlls", "html", "cssls", "pyright", "gopls"},
     handlers = {
         -- Default handler for all Mason-installed LSPs
         function(server_name)
@@ -78,6 +77,15 @@ mason_lspconfig.setup({
                         }
                     }
                 }
+            })
+        end,
+
+        -- TypeScript/JavaScript LSP
+        ["ts_ls"] = function()
+            lspconfig.ts_ls.setup({
+                capabilities = capabilities,
+                on_attach = on_attach,
+                filetypes = {"javascript", "javascriptreact", "typescript", "typescriptreact"}
             })
         end,
 
