@@ -1,6 +1,12 @@
 -- Prioritize Nix binaries over Mason binaries
 vim.env.PATH = vim.env.HOME .. "/.nix-profile/bin:" .. vim.env.PATH
 
+-- Add Mason bin so plugins like Conform see installed binaries
+local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
+if not string.find(vim.env.PATH, mason_bin, 1, true) then
+    vim.env.PATH = mason_bin .. ":" .. vim.env.PATH
+end
+
 vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
 
@@ -46,9 +52,9 @@ vim.schedule(function()
 end)
 
 -- Execute the formatter check logic AFTER plugins are loaded
--- vim.schedule(function()
---     local installer = require("configs.installer")
---     if installer and installer.install_formatters then
---         installer.install_formatters()
---     end
--- end)
+vim.schedule(function()
+    local installer = require("configs.installer")
+    if installer and installer.install_formatters then
+        installer.install_formatters()
+    end
+end)
