@@ -88,13 +88,6 @@ map("n", "<leader>fc", "<cmd>Telescope commands<cr>", { desc = "Find commands" }
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", { desc = "Find keymaps" })
 
 -------------------------------------------------------
--- LSP / Formatting
--------------------------------------------------------
-map("n", "<leader>lf", function()
-  vim.lsp.buf.format { async = true }
-end, { desc = "Format current buffer" })
-
--------------------------------------------------------
 -- Terminal Management (ToggleTerm)
 -------------------------------------------------------
 local ok, toggleterm = pcall(require, "toggleterm")
@@ -158,3 +151,142 @@ end, { desc = "Send command to terminal" })
 map({ "n", "t" }, "<C-\\>", function()
   get_term("horizontal", 1):toggle()
 end, { desc = "Toggle terminal" })
+
+-------------------------------------------------------
+-- LSP Navigation & Information
+-------------------------------------------------------
+-- Go to definition
+map("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+map("n", "<leader>gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+
+-- Go to declaration
+map("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+
+-- Go to implementation
+map("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
+map("n", "<leader>gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
+
+-- Go to type definition
+map("n", "gt", vim.lsp.buf.type_definition, { desc = "Go to type definition" })
+map("n", "<leader>gt", vim.lsp.buf.type_definition, { desc = "Go to type definition" })
+
+-- Find references
+map("n", "gr", vim.lsp.buf.references, { desc = "Find references" })
+map("n", "<leader>gr", vim.lsp.buf.references, { desc = "Find references" })
+
+-- Hover documentation
+map("n", "K", vim.lsp.buf.hover, { desc = "Show hover documentation" })
+map("n", "<leader>k", vim.lsp.buf.hover, { desc = "Show hover documentation" })
+
+-- Signature help (shows function parameters)
+map("n", "<leader>sh", vim.lsp.buf.signature_help, { desc = "Signature help" })
+map("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
+
+-------------------------------------------------------
+-- LSP Code Actions & Refactoring
+-------------------------------------------------------
+-- Code actions (quick fixes, refactoring)
+map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code actions" })
+map({ "n", "v" }, "<leader>.", vim.lsp.buf.code_action, { desc = "Code actions" })
+
+-- Rename symbol
+map("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
+map("n", "<F2>", vim.lsp.buf.rename, { desc = "Rename symbol" })
+
+-- Format current buffer
+map("n", "<leader>lf", function()
+  vim.lsp.buf.format { async = true }
+end, { desc = "Format buffer" })
+map({ "n", "v" }, "<leader>fm", function()
+  vim.lsp.buf.format { async = true }
+end, { desc = "Format buffer/selection" })
+
+-------------------------------------------------------
+-- Diagnostics (Errors, Warnings, etc.)
+-------------------------------------------------------
+-- Show diagnostics in floating window
+map("n", "<leader>do", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+map("n", "gl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+
+-- Go to next/previous diagnostic
+map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+map("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
+
+-- Go to next/previous error (severity = ERROR only)
+map("n", "]e", function()
+  vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+end, { desc = "Next error" })
+map("n", "[e", function()
+  vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+end, { desc = "Previous error" })
+
+-- Show all diagnostics in location list
+map("n", "<leader>dl", vim.diagnostic.setloclist, { desc = "Diagnostics to location list" })
+
+-- Show all diagnostics in quickfix
+map("n", "<leader>dq", vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
+
+-------------------------------------------------------
+-- Telescope LSP Integration (Fuzzy Finding)
+-------------------------------------------------------
+map("n", "<leader>ls", "<cmd>Telescope lsp_document_symbols<cr>", { desc = "Document symbols" })
+map("n", "<leader>lS", "<cmd>Telescope lsp_workspace_symbols<cr>", { desc = "Workspace symbols" })
+map("n", "<leader>ld", "<cmd>Telescope diagnostics<cr>", { desc = "Show diagnostics" })
+map("n", "<leader>lr", "<cmd>Telescope lsp_references<cr>", { desc = "Find references (Telescope)" })
+map("n", "<leader>lD", "<cmd>Telescope lsp_definitions<cr>", { desc = "Find definitions (Telescope)" })
+map("n", "<leader>li", "<cmd>Telescope lsp_implementations<cr>", { desc = "Find implementations (Telescope)" })
+
+-------------------------------------------------------
+-- Workspace Management
+-------------------------------------------------------
+map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, { desc = "Add workspace folder" })
+map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, { desc = "Remove workspace folder" })
+map("n", "<leader>wl", function()
+  print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+end, { desc = "List workspace folders" })
+
+-------------------------------------------------------
+-- Peek Definition (without leaving current buffer)
+-------------------------------------------------------
+-- Using Telescope for peek
+map("n", "<leader>pd", function()
+  require("telescope.builtin").lsp_definitions({
+    jump_type = "never",
+  })
+end, { desc = "Peek definition" })
+
+-------------------------------------------------------
+-- Inlay Hints (Show inline type hints)
+-------------------------------------------------------
+map("n", "<leader>th", function()
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, { desc = "Toggle inlay hints" })
+
+-------------------------------------------------------
+-- Advanced: Split Navigation
+-------------------------------------------------------
+-- Open definition in vertical split
+map("n", "<leader>vd", function()
+  vim.cmd("vsplit")
+  vim.lsp.buf.definition()
+end, { desc = "Open definition in vsplit" })
+
+-- Open definition in horizontal split
+map("n", "<leader>sd", function()
+  vim.cmd("split")
+  vim.lsp.buf.definition()
+end, { desc = "Open definition in split" })
+
+-------------------------------------------------------
+-- Document Outline (symbols)
+-------------------------------------------------------
+-- Requires aerial.nvim or symbols-outline.nvim (optional plugins)
+map("n", "<leader>lo", "<cmd>AerialToggle<cr>", { desc = "Toggle outline" })
+
+-------------------------------------------------------
+-- Quick Diagnostic Navigation
+-------------------------------------------------------
+-- Jump to first error in file
+map("n", "<leader>de", function()
+  vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR, wrap = false })
+end, { desc = "Jump to first error" })
