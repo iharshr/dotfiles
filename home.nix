@@ -10,6 +10,7 @@
   home.packages = with pkgs; [
     cmake
     gnumake
+    glibc
     docker
     ffmpeg
     python3
