@@ -46,9 +46,9 @@ vim.schedule(function()
 end)
 
 -- Execute the formatter check logic AFTER plugins are loaded
-vim.schedule(function()
-    local installer = require("configs.installer")
-    if installer and installer.install_formatters then
-        installer.install_formatters()
-    end
-end)
+-- vim.schedule(function()
+--     local installer = require("configs.installer")
+--     if installer and installer.install_formatters then
+--         installer.install_formatters()
+--     end
+-- end)
