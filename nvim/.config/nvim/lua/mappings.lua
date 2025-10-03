@@ -72,7 +72,9 @@ end, { desc = "Toggle file explorer" })
 -- Telescope (Fuzzy Finder)
 -------------------------------------------------------
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-map("n", "<leader>fg", function() require("telescope.builtin").live_grep({ additional_args = function() return { "--ignore-case" } end }) end, { desc = "Live grep (global search, case-insensitive)" })
+map("n", "<leader>fg",
+  function() require("telescope.builtin").live_grep({ additional_args = function() return { "--ignore-case" } end }) end,
+  { desc = "Live grep (global search, case-insensitive)" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help tags" })
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
@@ -133,8 +135,8 @@ map("n", "<leader>tf", function() get_term("float", 1):toggle() end, { desc = "T
 map("n", "<leader>tfn", function() get_term("float"):toggle() end, { desc = "New floating terminal" })
 
 -- Close all terminals
-map("n", "<leader>tc", function() 
-  require("toggleterm").close_all() 
+map("n", "<leader>tc", function()
+  require("toggleterm").close_all()
 end, { desc = "Close all terminals" })
 
 -- Send command to terminal
