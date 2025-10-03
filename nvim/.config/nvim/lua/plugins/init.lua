@@ -91,7 +91,7 @@ return {
             "nvim-lua/plenary.nvim",
             {
                 "nvim-telescope/telescope-fzf-native.nvim",
-                build = "make"
+                build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
             }
         },
         cmd = "Telescope",
@@ -122,7 +122,8 @@ return {
                     }
                 }
             })
-            telescope.load_extension("fzf")
+            -- Load fzf extension with error handling
+            pcall(telescope.load_extension, "fzf")
         end
     },
     
