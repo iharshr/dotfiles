@@ -8,6 +8,8 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
+    cmake
+    gnumake
     docker
     ffmpeg
     python3
@@ -26,6 +28,8 @@
     biome
     unzip
     gcc
+    ripgrep
+    fd
   ];
 
   # Neovim managed by Home Manager
