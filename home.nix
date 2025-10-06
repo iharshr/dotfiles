@@ -11,7 +11,6 @@
     cmake
     gnumake
     glibc
-    docker
     ffmpeg
     python3
     stow
