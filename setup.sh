@@ -91,6 +91,89 @@ install_zsh_omz() {
     fi
 }
 
+install_docker() {
+    print_header "Installing Docker"
+    
+    if command -v docker &>/dev/null; then
+        print_success "Docker already installed"
+        DOCKER_VERSION=$(docker --version)
+        print_info "$DOCKER_VERSION"
+    else
+        print_step "Installing Docker prerequisites..."
+        sudo apt-get update
+        sudo apt-get install -y \
+            ca-certificates \
+            curl \
+            gnupg \
+            lsb-release
+        
+        print_step "Adding Docker's official GPG key..."
+        sudo mkdir -p /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        
+        print_step "Setting up Docker repository..."
+        echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        
+        print_step "Installing Docker Engine..."
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        print_success "Docker installed successfully"
+    fi
+    
+    # Create docker group if it doesn't exist
+    if ! getent group docker > /dev/null 2>&1; then
+        print_step "Creating docker group..."
+        sudo groupadd docker
+        print_success "Docker group created"
+    else
+        print_success "Docker group already exists"
+    fi
+    
+    # Add user to docker group
+    if ! groups "$USER_NAME" | grep -q docker; then
+        print_step "Adding $USER_NAME to docker group..."
+        sudo usermod -aG docker "$USER_NAME"
+        print_success "User added to docker group"
+        print_warning "You need to log out and log back in for group changes to take effect"
+        print_info "Or run: newgrp docker"
+    else
+        print_success "User already in docker group"
+    fi
+    
+    # Enable and start Docker service
+    print_step "Enabling Docker service..."
+    if sudo systemctl enable docker 2>/dev/null; then
+        print_success "Docker service enabled"
+    else
+        print_warning "Could not enable Docker service automatically"
+    fi
+    
+    if sudo systemctl start docker 2>/dev/null; then
+        print_success "Docker service started"
+    else
+        print_warning "Docker service may already be running"
+    fi
+    
+    # Check Docker service status
+    if sudo systemctl is-active --quiet docker; then
+        print_success "Docker service is running"
+    else
+        print_error "Docker service is not running. Try: sudo systemctl start docker"
+    fi
+    
+    # Verify Docker installation
+    print_step "Verifying Docker installation..."
+    if sudo docker run hello-world &>/dev/null; then
+        print_success "Docker is working correctly!"
+    else
+        print_warning "Docker test failed. You may need to restart your system."
+    fi
+    
+    print_info "Docker Compose is included as a plugin (use: docker compose)"
+}
+
 install_nix() {
     print_header "Installing Nix Package Manager"
     
@@ -196,12 +279,13 @@ show_menu() {
     print_header "Dotfiles Setup Script"
     echo -e "${MAGENTA}Select installation steps:${NC}\n"
     echo -e "  ${GREEN}1)${NC} Install Zsh & Oh-My-Zsh (Run this first!)"
-    echo -e "  ${GREEN}2)${NC} Install Nix Package Manager"
-    echo -e "  ${GREEN}3)${NC} Install Home Manager"
-    echo -e "  ${GREEN}4)${NC} Apply Home Manager Config"
-    echo -e "  ${GREEN}5)${NC} Install GNU Stow"
-    echo -e "  ${GREEN}6)${NC} Symlink Dotfiles"
-    echo -e "  ${GREEN}7)${NC} Run All Steps"
+    echo -e "  ${GREEN}2)${NC} Install Docker & Docker Compose"
+    echo -e "  ${GREEN}3)${NC} Install Nix Package Manager"
+    echo -e "  ${GREEN}4)${NC} Install Home Manager"
+    echo -e "  ${GREEN}5)${NC} Apply Home Manager Config"
+    echo -e "  ${GREEN}6)${NC} Install GNU Stow"
+    echo -e "  ${GREEN}7)${NC} Symlink Dotfiles"
+    echo -e "  ${GREEN}8)${NC} Run All Steps"
     echo -e "  ${GREEN}0)${NC} Exit"
     echo -e "\n${CYAN}─────────────────────────────────────────────────────${NC}"
 }
@@ -246,27 +330,32 @@ main() {
                 read_continue
                 ;;
             2)
-                install_nix
+                install_docker
                 read_continue
                 ;;
             3)
-                install_home_manager
+                install_nix
                 read_continue
                 ;;
             4)
-                apply_home_manager_config
+                install_home_manager
                 read_continue
                 ;;
             5)
-                install_stow
+                apply_home_manager_config
                 read_continue
                 ;;
             6)
-                symlink_dotfiles
+                install_stow
                 read_continue
                 ;;
             7)
+                symlink_dotfiles
+                read_continue
+                ;;
+            8)
                 install_zsh_omz
+                install_docker
                 install_nix
                 install_home_manager
                 apply_home_manager_config
@@ -274,6 +363,7 @@ main() {
                 symlink_dotfiles
                 print_header "Setup Complete! 🎉"
                 print_info "Please restart your terminal or run: exec zsh"
+                print_info "For Docker: Log out and log back in, or run: newgrp docker"
                 exit 0
                 ;;
             0)
