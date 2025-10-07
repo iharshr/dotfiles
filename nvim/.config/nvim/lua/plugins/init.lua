@@ -392,4 +392,19 @@ return {
       show_basename = true,
     },
   },
+  -- NeoVim / Vim Types
+  {
+    "folke/neodev.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("neodev").setup({
+        library = {
+          enabled = true, -- globally enable
+          runtime = true, -- include Neovim runtime files
+          types = true,   -- include type info
+          plugins = true, -- include installed plugins
+        },
+      })
+    end,
+  },
 }

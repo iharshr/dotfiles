@@ -1,6 +1,16 @@
 -- Ensure Neovim sees Nix binaries
 vim.env.PATH = vim.env.HOME .. "/.nix-profile/bin:" .. vim.env.PATH
 
+-- IMPORTANT: Setup neodev BEFORE lspconfig
+require("neodev").setup({
+    library = {
+        enabled = true,
+        runtime = true,
+        types = true,
+        plugins = true
+    }
+})
+
 local lspconfig = require("lspconfig")
 local mason_lspconfig = require("mason-lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
@@ -43,7 +53,7 @@ end
 -- Default capabilities
 local capabilities = cmp_nvim_lsp.default_capabilities()
 
--- Mason LSP setup - FIXED: Use correct server names
+-- Mason LSP setup
 mason_lspconfig.setup({
     ensure_installed = {"lua_ls", "ts_ls", "eslint", "jsonls", "yamlls", "html", "cssls", "pyright", "gopls"},
     handlers = {
@@ -55,26 +65,20 @@ mason_lspconfig.setup({
             })
         end,
 
-        -- Lua LSP (lua_ls)
+        -- Lua LSP - neodev will handle most of the config
         ["lua_ls"] = function()
             lspconfig.lua_ls.setup({
                 capabilities = capabilities,
                 on_attach = on_attach,
                 settings = {
                     Lua = {
-                        runtime = {
-                            version = "LuaJIT"
-                        },
-                        diagnostics = {
-                            globals = {"vim"}
-                        },
-                        workspace = {
-                            library = vim.api.nvim_get_runtime_file("", true),
-                            checkThirdParty = false
+                        completion = {
+                            callSnippet = "Replace"
                         },
                         telemetry = {
                             enable = false
                         }
+                        -- Let neodev handle workspace and diagnostics
                     }
                 }
             })

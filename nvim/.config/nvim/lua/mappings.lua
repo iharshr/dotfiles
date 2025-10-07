@@ -4,6 +4,13 @@ local map = vim.keymap.set
 -------------------------------------------------------
 -- General
 -------------------------------------------------------
+-- Copy selected text (visual mode)
+map("v", "<C-c>", '"+y', { noremap = true, silent = true })
+
+-- Paste in normal/insert modes
+map("n", "<C-v>", '"+p', { noremap = true, silent = true })
+map("i", "<C-v>", '<Esc>"+pa', { noremap = true, silent = true })
+
 map("n", ";", ":", { desc = "Enter command mode" })
 map("i", "jk", "<ESC>", { desc = "Exit insert mode" })
 
