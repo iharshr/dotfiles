@@ -7,6 +7,9 @@ local map = vim.keymap.set
 -- Copy selected text (visual mode)
 map("v", "<C-c>", '"+y', { noremap = true, silent = true })
 
+-- Select all text in normal mode
+map("n", "<C-a>", "ggVG", { desc = "Select all", noremap = true, silent = true })
+
 -- Paste in normal/insert modes
 map("n", "<C-v>", '"+p', { noremap = true, silent = true })
 map("i", "<C-v>", '<Esc>"+pa', { noremap = true, silent = true })
@@ -84,9 +87,13 @@ map(
   "<cmd>lua require('telescope.builtin').find_files({ hidden = true, no_ignore = true, file_ignore_patterns = {'.git/', 'node_modules/', 'build/', 'dist/'} })<cr>",
   { desc = "Find files including hidden but exclude common ignored folders" }
 )
-map("n", "<leader>fg",
-  function() require("telescope.builtin").live_grep({ additional_args = function() return { "--ignore-case" } end }) end,
-  { desc = "Live grep (global search, case-insensitive)" })
+map("n", "<leader>fg", function()
+  require("telescope.builtin").live_grep {
+    additional_args = function()
+      return { "--ignore-case" }
+    end,
+  }
+end, { desc = "Live grep (global search, case-insensitive)" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help tags" })
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Recent files" })
@@ -105,43 +112,67 @@ end
 local Terminal = require("toggleterm.terminal").Terminal
 
 local function get_term(direction, id)
-  return Terminal:new({
+  return Terminal:new {
     direction = direction,
     id = id,
     hidden = true,
     on_open = function(term)
       -- Keymaps inside terminal
       vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], { buffer = term.bufnr, desc = "Exit terminal mode" })
-      
+
       -- Window navigation from terminal
       vim.keymap.set("t", "<C-h>", [[<C-\><C-n><C-w>h]], { buffer = term.bufnr, desc = "Go to left window" })
       vim.keymap.set("t", "<C-j>", [[<C-\><C-n><C-w>j]], { buffer = term.bufnr, desc = "Go to bottom window" })
       vim.keymap.set("t", "<C-k>", [[<C-\><C-n><C-w>k]], { buffer = term.bufnr, desc = "Go to top window" })
       vim.keymap.set("t", "<C-l>", [[<C-\><C-n><C-w>l]], { buffer = term.bufnr, desc = "Go to right window" })
-      
+
       -- IMPORTANT: Allow Ctrl+C to send interrupt signal in terminal mode
       -- This removes the copy binding in terminal mode
       vim.keymap.set("t", "<C-c>", "<C-c>", { buffer = term.bufnr, desc = "Send interrupt signal" })
     end,
-  })
+  }
 end
 -- Bottom terminals
-map("n", "<leader>tb", function() get_term("horizontal", 1):toggle() end, { desc = "Toggle bottom terminal" })
-map("n", "<leader>tbn", function() get_term("horizontal"):toggle() end, { desc = "New bottom terminal" })
-map("n", "<leader>tb1", function() get_term("horizontal", 1):toggle() end, { desc = "Bottom terminal 1" })
-map("n", "<leader>tb2", function() get_term("horizontal", 2):toggle() end, { desc = "Bottom terminal 2" })
-map("n", "<leader>tb3", function() get_term("horizontal", 3):toggle() end, { desc = "Bottom terminal 3" })
+map("n", "<leader>tb", function()
+  get_term("horizontal", 1):toggle()
+end, { desc = "Toggle bottom terminal" })
+map("n", "<leader>tbn", function()
+  get_term("horizontal"):toggle()
+end, { desc = "New bottom terminal" })
+map("n", "<leader>tb1", function()
+  get_term("horizontal", 1):toggle()
+end, { desc = "Bottom terminal 1" })
+map("n", "<leader>tb2", function()
+  get_term("horizontal", 2):toggle()
+end, { desc = "Bottom terminal 2" })
+map("n", "<leader>tb3", function()
+  get_term("horizontal", 3):toggle()
+end, { desc = "Bottom terminal 3" })
 
 -- Right terminals
-map("n", "<leader>tr", function() get_term("vertical", 1):toggle() end, { desc = "Toggle right terminal" })
-map("n", "<leader>trn", function() get_term("vertical"):toggle() end, { desc = "New right terminal" })
-map("n", "<leader>tr1", function() get_term("vertical", 1):toggle() end, { desc = "Right terminal 1" })
-map("n", "<leader>tr2", function() get_term("vertical", 2):toggle() end, { desc = "Right terminal 2" })
-map("n", "<leader>tr3", function() get_term("vertical", 3):toggle() end, { desc = "Right terminal 3" })
+map("n", "<leader>tr", function()
+  get_term("vertical", 1):toggle()
+end, { desc = "Toggle right terminal" })
+map("n", "<leader>trn", function()
+  get_term("vertical"):toggle()
+end, { desc = "New right terminal" })
+map("n", "<leader>tr1", function()
+  get_term("vertical", 1):toggle()
+end, { desc = "Right terminal 1" })
+map("n", "<leader>tr2", function()
+  get_term("vertical", 2):toggle()
+end, { desc = "Right terminal 2" })
+map("n", "<leader>tr3", function()
+  get_term("vertical", 3):toggle()
+end, { desc = "Right terminal 3" })
 
 -- Floating terminals
-map("n", "<leader>tf", function() get_term("float", 1):toggle() end, { desc = "Toggle floating terminal" })
-map("n", "<leader>tfn", function() get_term("float"):toggle() end, { desc = "New floating terminal" })
+map("n", "<leader>tf", function()
+  get_term("float", 1):toggle()
+end, { desc = "Toggle floating terminal" })
+map("n", "<leader>tfn", function()
+  get_term("float"):toggle()
+end, { desc = "New floating terminal" })
 
 -- Close all terminals
 map("n", "<leader>tc", function()
@@ -150,7 +181,7 @@ end, { desc = "Close all terminals" })
 
 -- Send command to terminal
 map("n", "<leader>ts", function()
-  local cmd = vim.fn.input("Send to terminal: ")
+  local cmd = vim.fn.input "Send to terminal: "
   if cmd ~= "" then
     local term = get_term("horizontal", 1)
     term:toggle()
@@ -225,10 +256,10 @@ map("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
 
 -- Go to next/previous error (severity = ERROR only)
 map("n", "]e", function()
-  vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
+  vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
 end, { desc = "Next error" })
 map("n", "[e", function()
-  vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
+  vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
 end, { desc = "Previous error" })
 
 -- Show all diagnostics in location list
@@ -261,9 +292,9 @@ end, { desc = "List workspace folders" })
 -------------------------------------------------------
 -- Using Telescope for peek
 map("n", "<leader>pd", function()
-  require("telescope.builtin").lsp_definitions({
+  require("telescope.builtin").lsp_definitions {
     jump_type = "never",
-  })
+  }
 end, { desc = "Peek definition" })
 
 -------------------------------------------------------
@@ -278,13 +309,13 @@ end, { desc = "Toggle inlay hints" })
 -------------------------------------------------------
 -- Open definition in vertical split
 map("n", "<leader>vd", function()
-  vim.cmd("vsplit")
+  vim.cmd "vsplit"
   vim.lsp.buf.definition()
 end, { desc = "Open definition in vsplit" })
 
 -- Open definition in horizontal split
 map("n", "<leader>sd", function()
-  vim.cmd("split")
+  vim.cmd "split"
   vim.lsp.buf.definition()
 end, { desc = "Open definition in split" })
 
@@ -299,9 +330,8 @@ map("n", "<leader>lo", "<cmd>AerialToggle<cr>", { desc = "Toggle outline" })
 -------------------------------------------------------
 -- Jump to first error in file
 map("n", "<leader>de", function()
-  vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR, wrap = false })
+  vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR, wrap = false }
 end, { desc = "Jump to first error" })
-
 
 -------------------------------------------------------
 -- Multi-Cursor / Visual Multi
@@ -318,42 +348,42 @@ map("v", "<S-Down>", "<Down>", { desc = "Extend selection down" })
 -- This is configured in the plugin init function, but you can also map it here
 map({ "n", "v" }, "<C-d>", function()
   -- Check if vim-visual-multi is loaded
-  if vim.fn.exists(":VMStart") == 2 then
+  if vim.fn.exists ":VMStart" == 2 then
     -- In normal mode, start multi-cursor on word under cursor
     -- In visual mode, find next occurrence of selection
-    vim.cmd("silent! call vm#commands#find_under(0, 1)")
+    vim.cmd "silent! call vm#commands#find_under(0, 1)"
   else
     -- Fallback to native behavior or multicursors.nvim
     local ok, multicursors = pcall(require, "multicursors")
     if ok then
-      vim.cmd("MCunderCursor")
+      vim.cmd "MCunderCursor"
     else
       -- Native Vim behavior: scroll down half page
-      vim.cmd("normal! <C-d>")
+      vim.cmd "normal! <C-d>"
     end
   end
 end, { desc = "Multi-cursor: Select next occurrence" })
 
 -- Ctrl+Shift+D to select all occurrences
 map({ "n", "v" }, "<C-S-d>", function()
-  if vim.fn.exists(":VMStart") == 2 then
-    vim.cmd("silent! call vm#commands#find_all(0, 1)")
+  if vim.fn.exists ":VMStart" == 2 then
+    vim.cmd "silent! call vm#commands#find_all(0, 1)"
   end
 end, { desc = "Multi-cursor: Select all occurrences" })
 
 -- Skip current and select next (like VSCode Ctrl+K, Ctrl+D)
 map("n", "<C-k><C-d>", function()
-  if vim.fn.exists(":VMStart") == 2 then
-    vim.cmd("silent! call vm#commands#skip_and_find_next()")
+  if vim.fn.exists ":VMStart" == 2 then
+    vim.cmd "silent! call vm#commands#skip_and_find_next()"
   end
 end, { desc = "Multi-cursor: Skip and find next" })
 
 -- Escape to exit multi-cursor mode
 map("n", "<Esc>", function()
-  if vim.fn.exists("*vm#is_active") == 1 and vim.fn["vm#is_active"]() == 1 then
-    vim.cmd("VMClear")
+  if vim.fn.exists "*vm#is_active" == 1 and vim.fn["vm#is_active"]() == 1 then
+    vim.cmd "VMClear"
   else
-    vim.cmd("nohlsearch")
+    vim.cmd "nohlsearch"
   end
 end, { desc = "Clear multi-cursor or search highlight" })
 
@@ -361,14 +391,14 @@ end, { desc = "Clear multi-cursor or search highlight" })
 -- These are already configured in vim-visual-multi with Shift+Up/Down
 -- But if you want explicit keybinds:
 map("n", "<C-S-Up>", function()
-  if vim.fn.exists(":VMStart") == 2 then
-    vim.cmd("silent! call vm#commands#add_cursor_up(1)")
+  if vim.fn.exists ":VMStart" == 2 then
+    vim.cmd "silent! call vm#commands#add_cursor_up(1)"
   end
 end, { desc = "Add cursor above" })
 
 map("n", "<C-S-Down>", function()
-  if vim.fn.exists(":VMStart") == 2 then
-    vim.cmd("silent! call vm#commands#add_cursor_down(1)")
+  if vim.fn.exists ":VMStart" == 2 then
+    vim.cmd "silent! call vm#commands#add_cursor_down(1)"
   end
 end, { desc = "Add cursor below" })
 
