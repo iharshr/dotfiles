@@ -407,4 +407,232 @@ return {
       })
     end,
   },
+
+   -- Gitsigns - Git decorations (added/modified/deleted lines)
+  {
+    "lewis6991/gitsigns.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {
+      signs = {
+        add = { text = "│" },
+        change = { text = "│" },
+        delete = { text = "_" },
+        topdelete = { text = "‾" },
+        changedelete = { text = "~" },
+        untracked = { text = "┆" },
+      },
+      signcolumn = true,
+      current_line_blame = true, -- Shows inline blame
+      current_line_blame_opts = {
+        virt_text = true,
+        virt_text_pos = "eol",
+        delay = 500,
+      },
+      on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
+
+        local function map(mode, l, r, opts)
+          opts = opts or {}
+          opts.buffer = bufnr
+          vim.keymap.set(mode, l, r, opts)
+        end
+
+        -- Navigation
+        map("n", "]c", function()
+          if vim.wo.diff then return "]c" end
+          vim.schedule(function() gs.next_hunk() end)
+          return "<Ignore>"
+        end, { expr = true, desc = "Next git hunk" })
+
+        map("n", "[c", function()
+          if vim.wo.diff then return "[c" end
+          vim.schedule(function() gs.prev_hunk() end)
+          return "<Ignore>"
+        end, { expr = true, desc = "Previous git hunk" })
+
+        -- Actions
+        map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage hunk" })
+        map("n", "<leader>hr", gs.reset_hunk, { desc = "Reset hunk" })
+        map("v", "<leader>hs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, { desc = "Stage hunk" })
+        map("v", "<leader>hr", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, { desc = "Reset hunk" })
+        map("n", "<leader>hS", gs.stage_buffer, { desc = "Stage buffer" })
+        map("n", "<leader>hu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
+        map("n", "<leader>hR", gs.reset_buffer, { desc = "Reset buffer" })
+        map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview hunk" })
+        map("n", "<leader>hb", function() gs.blame_line({ full = true }) end, { desc = "Blame line" })
+        map("n", "<leader>tlb", gs.toggle_current_line_blame, { desc = "Toggle line blame" })
+        map("n", "<leader>hd", gs.diffthis, { desc = "Diff this" })
+        map("n", "<leader>hD", function() gs.diffthis("~") end, { desc = "Diff this ~" })
+        map("n", "<leader>td", gs.toggle_deleted, { desc = "Toggle deleted" })
+
+        -- Text object
+        map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })
+      end,
+    },
+  },
+
+  -- Neogit - Magit clone for Neovim (like VSCode Source Control)
+  {
+    "NeogitOrg/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "sindrets/diffview.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    cmd = "Neogit",
+    keys = {
+      { "<leader>gg", "<cmd>Neogit<cr>", desc = "Neogit" },
+      { "<leader>gc", "<cmd>Neogit commit<cr>", desc = "Git commit" },
+      { "<leader>gp", "<cmd>Neogit push<cr>", desc = "Git push" },
+      { "<leader>gP", "<cmd>Neogit pull<cr>", desc = "Git pull" },
+    },
+    opts = {
+      integrations = {
+        telescope = true,
+        diffview = true,
+      },
+      graph_style = "unicode",
+    },
+  },
+
+  -- Diffview - Advanced diff viewer
+  {
+    "sindrets/diffview.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
+    cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+    keys = {
+      { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Open Diffview" },
+      { "<leader>gh", "<cmd>DiffviewFileHistory<cr>", desc = "File History" },
+      { "<leader>gH", "<cmd>DiffviewFileHistory %<cr>", desc = "Current File History" },
+      { "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
+    },
+    opts = {
+      enhanced_diff_hl = true,
+      view = {
+        default = {
+          layout = "diff2_horizontal",
+        },
+        merge_tool = {
+          layout = "diff3_horizontal",
+        },
+      },
+    },
+  },
+
+  -- Git Blame - Show git blame in virtual text
+  {
+    "f-person/git-blame.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    keys = {
+      { "<leader>gb", "<cmd>GitBlameToggle<cr>", desc = "Toggle Git Blame" },
+      { "<leader>go", "<cmd>GitBlameOpenCommitURL<cr>", desc = "Open commit in browser" },
+    },
+    opts = {
+      enabled = false, -- Don't enable by default (toggle with <leader>gb)
+      message_template = " <author> • <date> • <summary>",
+      date_format = "%r",
+      virtual_text_column = 80,
+    },
+  },
+
+  -- Fugitive - Classic Git wrapper (powerful commands)
+  {
+    "tpope/vim-fugitive",
+    cmd = { "Git", "G", "Gdiffsplit", "Gvdiffsplit", "Gread", "Gwrite", "Ggrep", "GMove", "GDelete", "GBrowse" },
+    keys = {
+      { "<leader>gs", "<cmd>Git<cr>", desc = "Git status" },
+      { "<leader>gl", "<cmd>Git log<cr>", desc = "Git log" },
+      { "<leader>gL", "<cmd>Git log --oneline --graph --all<cr>", desc = "Git log (graph)" },
+      { "<leader>gB", "<cmd>Git blame<cr>", desc = "Git blame (fugitive)" },
+      { "<leader>gw", "<cmd>Gwrite<cr>", desc = "Git add (write)" },
+      { "<leader>gr", "<cmd>Gread<cr>", desc = "Git checkout (read)" },
+    },
+  },
+
+  -- Telescope Git extensions
+  {
+    "nvim-telescope/telescope.nvim",
+    keys = {
+      { "<leader>fgb", "<cmd>Telescope git_branches<cr>", desc = "Git branches" },
+      { "<leader>fgc", "<cmd>Telescope git_commits<cr>", desc = "Git commits" },
+      { "<leader>fgs", "<cmd>Telescope git_status<cr>", desc = "Git status" },
+      { "<leader>fgh", "<cmd>Telescope git_stash<cr>", desc = "Git stash" },
+      { "<leader>fgf", "<cmd>Telescope git_files<cr>", desc = "Git files" },
+    },
+  },
+
+  -- GitLinker - Copy git links to clipboard
+  {
+    "ruifm/gitlinker.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
+    keys = {
+      { "<leader>gy", mode = { "n", "v" }, desc = "Copy git link" },
+      { "<leader>gY", mode = { "n", "v" }, desc = "Open git link in browser" },
+    },
+    config = function()
+      require("gitlinker").setup({
+        mappings = "<leader>gy",
+      })
+      vim.keymap.set({ "n", "v" }, "<leader>gY", function()
+        require("gitlinker").get_buf_range_url("n", { action_callback = require("gitlinker.actions").open_in_browser })
+      end, { desc = "Open git link in browser" })
+    end,
+  },
+
+  -- Git-Conflict - Resolve merge conflicts
+  {
+    "akinsho/git-conflict.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    keys = {
+      { "<leader>co", "<cmd>GitConflictChooseOurs<cr>", desc = "Choose ours" },
+      { "<leader>ct", "<cmd>GitConflictChooseTheirs<cr>", desc = "Choose theirs" },
+      { "<leader>cb", "<cmd>GitConflictChooseBoth<cr>", desc = "Choose both" },
+      { "<leader>c0", "<cmd>GitConflictChooseNone<cr>", desc = "Choose none" },
+      { "]x", "<cmd>GitConflictNextConflict<cr>", desc = "Next conflict" },
+      { "[x", "<cmd>GitConflictPrevConflict<cr>", desc = "Previous conflict" },
+      { "<leader>cl", "<cmd>GitConflictListQf<cr>", desc = "List conflicts" },
+    },
+    opts = {
+      default_mappings = false,
+      disable_diagnostics = true,
+      highlights = {
+        incoming = "DiffAdd",
+        current = "DiffText",
+      },
+    },
+  },
+
+  -- Multiple cursors plugin (VSCode-like multi-cursor)
+  {
+    "mg979/vim-visual-multi",
+    event = "VeryLazy",
+    init = function()
+      -- Use Ctrl+N for next match (default behavior)
+      -- Use Ctrl+Down/Up for creating cursors above/below
+      vim.g.VM_maps = {
+        ["Find Under"] = "<C-d>",           -- Start multi-cursor on word
+        ["Find Subword Under"] = "<C-d>",   -- Start multi-cursor on word
+        ["Add Cursor Down"] = "<S-Down>",   -- Add cursor below
+        ["Add Cursor Up"] = "<S-Up>",       -- Add cursor above
+        ["Select All"] = "<C-S-l>",         -- Select all occurrences
+        ["Start Regex Search"] = "<C-/>",   -- Start regex search
+        ["Add Cursor At Pos"] = "<C-S-LeftMouse>", -- Click to add cursor
+        ["Mouse Cursor"] = "<C-LeftMouse>", -- Mouse cursor
+        ["Mouse Word"] = "<C-RightMouse>",  -- Mouse word
+        ["Mouse Column"] = "<M-C-RightMouse>", -- Mouse column
+      }
+      
+      -- Theme settings
+      vim.g.VM_theme = "ocean"
+      
+      -- Highlight settings
+      vim.g.VM_highlight_matches = "underline"
+      
+      -- Don't show messages
+      vim.g.VM_silent_exit = 1
+      
+      -- Set leader for VM commands (optional)
+      vim.g.VM_leader = "\\"
+    end,
+  },
 }

@@ -297,3 +297,89 @@ map("n", "<leader>lo", "<cmd>AerialToggle<cr>", { desc = "Toggle outline" })
 map("n", "<leader>de", function()
   vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR, wrap = false })
 end, { desc = "Jump to first error" })
+
+
+-------------------------------------------------------
+-- Multi-Cursor / Visual Multi
+-------------------------------------------------------
+-- NOTE: Add these to your mappings.lua file
+
+-- Visual line selection with Shift+Up/Down (extends selection)
+map("n", "<S-Up>", "V<Up>", { desc = "Select line up" })
+map("n", "<S-Down>", "V<Down>", { desc = "Select line down" })
+map("v", "<S-Up>", "<Up>", { desc = "Extend selection up" })
+map("v", "<S-Down>", "<Down>", { desc = "Extend selection down" })
+
+-- For vim-visual-multi: Ctrl+D to select next occurrence (like VSCode)
+-- This is configured in the plugin init function, but you can also map it here
+map({ "n", "v" }, "<C-d>", function()
+  -- Check if vim-visual-multi is loaded
+  if vim.fn.exists(":VMStart") == 2 then
+    -- In normal mode, start multi-cursor on word under cursor
+    -- In visual mode, find next occurrence of selection
+    vim.cmd("silent! call vm#commands#find_under(0, 1)")
+  else
+    -- Fallback to native behavior or multicursors.nvim
+    local ok, multicursors = pcall(require, "multicursors")
+    if ok then
+      vim.cmd("MCunderCursor")
+    else
+      -- Native Vim behavior: scroll down half page
+      vim.cmd("normal! <C-d>")
+    end
+  end
+end, { desc = "Multi-cursor: Select next occurrence" })
+
+-- Ctrl+Shift+D to select all occurrences
+map({ "n", "v" }, "<C-S-d>", function()
+  if vim.fn.exists(":VMStart") == 2 then
+    vim.cmd("silent! call vm#commands#find_all(0, 1)")
+  end
+end, { desc = "Multi-cursor: Select all occurrences" })
+
+-- Skip current and select next (like VSCode Ctrl+K, Ctrl+D)
+map("n", "<C-k><C-d>", function()
+  if vim.fn.exists(":VMStart") == 2 then
+    vim.cmd("silent! call vm#commands#skip_and_find_next()")
+  end
+end, { desc = "Multi-cursor: Skip and find next" })
+
+-- Escape to exit multi-cursor mode
+map("n", "<Esc>", function()
+  if vim.fn.exists("*vm#is_active") == 1 and vim.fn["vm#is_active"]() == 1 then
+    vim.cmd("VMClear")
+  else
+    vim.cmd("nohlsearch")
+  end
+end, { desc = "Clear multi-cursor or search highlight" })
+
+-- Alternative: Add cursors above/below current line (Column mode)
+-- These are already configured in vim-visual-multi with Shift+Up/Down
+-- But if you want explicit keybinds:
+map("n", "<C-S-Up>", function()
+  if vim.fn.exists(":VMStart") == 2 then
+    vim.cmd("silent! call vm#commands#add_cursor_up(1)")
+  end
+end, { desc = "Add cursor above" })
+
+map("n", "<C-S-Down>", function()
+  if vim.fn.exists(":VMStart") == 2 then
+    vim.cmd("silent! call vm#commands#add_cursor_down(1)")
+  end
+end, { desc = "Add cursor below" })
+
+-------------------------------------------------------
+-- Visual Mode Enhancements
+-------------------------------------------------------
+-- Move selected lines up/down with Alt+Up/Down
+map("v", "<A-Up>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+map("v", "<A-Down>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+
+-- Indent/outdent in visual mode and stay in visual mode
+map("v", "<", "<gv", { desc = "Outdent and reselect" })
+map("v", ">", ">gv", { desc = "Indent and reselect" })
+
+-- Duplicate line/selection
+map("n", "<C-S-k>", "yyP", { desc = "Duplicate line up" })
+map("n", "<C-S-j>", "yyp", { desc = "Duplicate line down" })
+map("v", "<C-S-k>", "y`>p", { desc = "Duplicate selection down" })
