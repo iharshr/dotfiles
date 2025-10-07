@@ -113,14 +113,19 @@ local function get_term(direction, id)
     on_open = function(term)
       -- Keymaps inside terminal
       vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], { buffer = term.bufnr, desc = "Exit terminal mode" })
+
+      -- Window navigation from terminal
       vim.keymap.set("t", "<C-h>", [[<C-\><C-n><C-w>h]], { buffer = term.bufnr, desc = "Go to left window" })
       vim.keymap.set("t", "<C-j>", [[<C-\><C-n><C-w>j]], { buffer = term.bufnr, desc = "Go to bottom window" })
       vim.keymap.set("t", "<C-k>", [[<C-\><C-n><C-w>k]], { buffer = term.bufnr, desc = "Go to top window" })
       vim.keymap.set("t", "<C-l>", [[<C-\><C-n><C-w>l]], { buffer = term.bufnr, desc = "Go to right window" })
+
+      -- IMPORTANT: Allow Ctrl+C to send interrupt signal in terminal mode
+      -- This removes the copy binding in terminal mode
+      vim.keymap.set("t", "<C-c>", "<C-c>", { buffer = term.bufnr, desc = "Send interrupt signal" })
     end,
   })
 end
-
 -- Bottom terminals
 map("n", "<leader>tb", function() get_term("horizontal", 1):toggle() end, { desc = "Toggle bottom terminal" })
 map("n", "<leader>tbn", function() get_term("horizontal"):toggle() end, { desc = "New bottom terminal" })
