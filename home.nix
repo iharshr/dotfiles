@@ -30,6 +30,8 @@
     gcc
     ripgrep
     fd
+    php
+    phpPackages.composer
   ];
 
   # Neovim managed by Home Manager
