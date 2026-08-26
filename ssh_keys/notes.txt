@@ -1,0 +1,33 @@
+lykstage pem files
+
+sandbox-backend	ssh -i "lyk-sandbox.pem" ubuntu@ec2-18-206-125-21.compute-1.amazonaws.com
+sandbox-mysql	ssh -i "lyk-sandbox.pem" ubuntu@ec2-13-223-139-168.compute-1.amazonaws.com
+sandbox-mongo	ssh -i "lyk-sandbox.pem" ubuntu@ec2-3-225-150-177.compute-1.amazonaws.com
+
+--
+rds_tunnel_sandbox_harsh:
+	@ssh -i "~/ssh_keys/lyk-sandbox.pem" \
+		-L 3307:10.32.1.169:3306 \
+		ubuntu@ec2-18-206-125-21.compute-1.amazonaws.com
+
+scp -i /Users/harsh/ssh_keys/lykssh.pem /Users/harsh/Downloads/player-2.js root@lg.lykstage.com:/root/lg_nuevo_player/
+
+---
+- BE prod
+   ssh -i .\lyk-prod-backend.pem ubuntu@52.91.179.43
+
+- LG
+  ssh -i ./lykssh.pem root@lg.lykstage.com
+  ssh -i .\lykssh-do.pem root@lg.lykstage.com
+
+- Ad NodeJs
+  ssh -i /Users/harsh/ssh_keys/lykssh.pem root@137.184.74.252;
+
+
+---
+arthiq server
+
+–
+ssh root@187.127.146.228
+Pass :
+ashue@3523FD354
